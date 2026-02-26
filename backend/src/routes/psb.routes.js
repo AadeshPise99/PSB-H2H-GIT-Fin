@@ -23,6 +23,9 @@ router.post('/v2/bob/fetch-frq', psbService.fetchFrqByBatchId);
 // Fetch Invoices from MongoDB
 router.post('/v2/bob/invoices/fetch', psbService.fetchInvoices);
 
+// Fetch CP Data from MongoDB (for Exposure Update)
+router.post('/v2/bob/cp/fetch', psbService.fetchCpData);
+
 // Get SFTP config (display only, no password)
 router.get('/v2/bob/sftp/config', psbService.getSftpConfig);
 

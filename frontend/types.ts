@@ -37,7 +37,7 @@ export interface LogEntry {
   type: 'info' | 'success' | 'warning' | 'error';
 }
 
-export type ResponseType = 'transaction' | 'repayment';
+export type ResponseType = 'transaction' | 'repayment' | 'exposure';
 
 export interface ResponseFormData {
   headerDatetime: string; // Header datetime
@@ -51,6 +51,15 @@ export interface ResponseFormData {
   // Repayment-specific fields
   liquidationSeq: string;
   finalLiquidation: 'Y' | 'N';
+  // Exposure Update fields
+  bankCustomerCode: string;
+  relatedCustomerCode: string;
+  actionCode: 'U'; // Always 'U' for Update
+  exposureLimit: string;
+  exposureUtilized: string;
+  exposureRemaining: string;
+  actionTimestamp: string;
+  expiryDate: string;
 }
 
 export interface StoredFile {

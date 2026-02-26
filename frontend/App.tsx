@@ -49,6 +49,15 @@ const App: React.FC = () => {
     // Repayment fields
     liquidationSeq: '1',
     finalLiquidation: 'N',
+    // Exposure Update fields
+    bankCustomerCode: '',
+    relatedCustomerCode: '',
+    actionCode: 'U',
+    exposureLimit: '',
+    exposureUtilized: '',
+    exposureRemaining: '',
+    actionTimestamp: getLocalISOString(),
+    expiryDate: '',
   });
   const [generatedXml, setGeneratedXml] = useState<string>('');
 
@@ -56,6 +65,10 @@ const App: React.FC = () => {
   const [batchId, setBatchId] = useState<string>('');
   const [fetchingFrq, setFetchingFrq] = useState<boolean>(false);
   const [frqOptions, setFrqOptions] = useState<string[]>([]);
+
+  // CP Identifier State for fetching CP Data (Exposure Update)
+  const [cpIdentifier, setCpIdentifier] = useState<string>('');
+  const [fetchingCp, setFetchingCp] = useState<boolean>(false);
 
   // APP STORAGE (Local Site)
   const [localFiles, setLocalFiles] = useState<StoredFile[]>(() => {
@@ -273,9 +286,69 @@ const App: React.FC = () => {
     }
   };
 
+  // Fetch CP Data from MongoDB by CP Identifier (for Exposure Update)
+  const fetchCpData = async () => {
+    if (!cpIdentifier.trim()) {
+      alert('Please enter a CP Identifier');
+      return;
+    }
+
+    setFetchingCp(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/v2/bob/cp/fetch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cpIdentifier: cpIdentifier.trim() })
+      });
+
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Backend server not responding properly. Please restart the backend with: npm run dev');
+      }
+
+      const data = await response.json();
+
+      if (response.ok && data.status === 'success') {
+        // Auto-fill bankCustomerCode and relatedCustomerCode
+        setFormData(prev => ({
+          ...prev,
+          bankCustomerCode: data.data.tmchannelpartnerid || '',
+          relatedCustomerCode: data.data.tmprogramid || ''
+        }));
+        alert('CP data fetched successfully!');
+      } else {
+        alert(data.message || 'Failed to fetch CP data');
+      }
+    } catch (error: any) {
+      alert(`Error fetching CP data: ${error.message}`);
+    } finally {
+      setFetchingCp(false);
+    }
+  };
+
   const handleGenerateXml = () => {
     const formatDate = (dateStr: string) => dateStr ? dateStr.replace(/-/g, '') : '';
     const formatHeaderDateTime = (dtStr: string) => dtStr ? dtStr.replace(/[-:]/g, '') + '00' : '';
+    // Format for exposure: dd.MM.yyyy HHmmss
+    const formatExposureTimestamp = (dtStr: string) => {
+      if (!dtStr) return '';
+      const date = new Date(dtStr);
+      const dd = String(date.getDate()).padStart(2, '0');
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const yyyy = date.getFullYear();
+      const hh = String(date.getHours()).padStart(2, '0');
+      const min = String(date.getMinutes()).padStart(2, '0');
+      const ss = String(date.getSeconds()).padStart(2, '0');
+      return `${dd}.${mm}.${yyyy} ${hh}${min}${ss}`;
+    };
+    // Format for expiry date: dd.MM.yyyy
+    const formatExpiryDate = (dateStr: string) => {
+      if (!dateStr) return '';
+      const [yyyy, mm, dd] = dateStr.split('-');
+      return `${dd}.${mm}.${yyyy}`;
+    };
 
     let xml: string;
 
@@ -290,6 +363,18 @@ const App: React.FC = () => {
      <fundingresponses>
           <fundingresponse action="liquidate" action_date="${formatDate(formData.actionDate)}" amount="${formData.amount}" comment="${formData.comment}" liquidation_seq="${formData.liquidationSeq}" currency="INR" final_liquidation="${formData.finalLiquidation}" id="${formData.id}" due_date="${formatDate(formData.dueDate)}"/>
      </fundingresponses>
+</request>`;
+    } else if (responseType === 'exposure') {
+      // Exposure Update XML
+      xml = `<?xml version="1.0" encoding="UTF-8"?><request>
+     <header>
+          <source>BoB</source>
+          <datetime>${formatHeaderDateTime(formData.headerDatetime)}</datetime>
+          <description>Limits Update</description>
+     </header>
+     <exposureupdates>
+          <exposureupdate bank_customer_code="${formData.bankCustomerCode}" related_customer_code="${formData.relatedCustomerCode}" action_code="${formData.actionCode}" exposure_limit="${formData.exposureLimit}" exposure_utilized="${formData.exposureUtilized}" exposure_remaining="${formData.exposureRemaining}" action_timestamp="${formatExposureTimestamp(formData.actionTimestamp)}" expiry_date="${formatExpiryDate(formData.expiryDate)}"/>
+     </exposureupdates>
 </request>`;
     } else {
       // Transaction Response XML
@@ -565,6 +650,10 @@ const App: React.FC = () => {
             onGenerateXml={handleGenerateXml}
             onDownloadXml={downloadXml}
             onSaveToStorage={saveToLocalStorage}
+            cpIdentifier={cpIdentifier}
+            setCpIdentifier={setCpIdentifier}
+            fetchingCp={fetchingCp}
+            onFetchCp={fetchCpData}
           />
         )}
 

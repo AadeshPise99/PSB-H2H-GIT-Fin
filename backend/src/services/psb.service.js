@@ -319,3 +319,69 @@ exports.getSftpConfig = async (req, res) => {
         // Password NOT exposed to frontend
     });
 };
+
+// Fetch CP Data from MongoDB using CP Identifier (for Exposure Update)
+exports.fetchCpData = async (req, res) => {
+    let mongoClient;
+    try {
+        const { cpIdentifier } = req.body;
+
+        if (!cpIdentifier) {
+            return res.status(400).json({ message: 'CP Identifier is required' });
+        }
+
+        // Connect to MongoDB
+        mongoClient = new MongoClient(MONGO_URI);
+        await mongoClient.connect();
+
+        const db = mongoClient.db(MONGO_DATABASE);
+        const collection = db.collection('channel_partners');
+
+        // Aggregation pipeline: join channel_partners with programs collection
+        const result = await collection.aggregate([
+            // Step 1: Find the specific channel partner by cpreferenceid
+            {
+                $match: {
+                    cpreferenceid: cpIdentifier
+                }
+            },
+            // Step 2: Join with the "programs" collection
+            {
+                $lookup: {
+                    from: "programs",
+                    localField: "psbplatformprogramid",
+                    foreignField: "id",
+                    as: "program_data"
+                }
+            },
+            // Step 3: Flatten the array created by $lookup
+            {
+                $unwind: "$program_data"
+            },
+            // Step 4: Project the fields we need
+            {
+                $project: {
+                    _id: 0,
+                    tmchannelpartnerid: 1,
+                    tmprogramid: "$program_data.tmprogramid"
+                }
+            }
+        ]).toArray();
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'No CP data found for the given CP Identifier' });
+        }
+
+        res.json({
+            status: 'success',
+            data: result[0]
+        });
+    } catch (error) {
+        console.error('Error in fetchCpData:', error.message);
+        res.status(500).json({ message: `MongoDB Error: ${error.message}` });
+    } finally {
+        if (mongoClient) {
+            await mongoClient.close();
+        }
+    }
+};
