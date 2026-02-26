@@ -116,14 +116,16 @@ MongoDB (transaction_summary)          MongoDB (transaction)              MySQL 
 git clone <repository-url>
 cd PSB-H2H-GIT-Fin
 
-# Step 2: Install ALL dependencies (root + frontend + backend)
-# ⚠️ IMPORTANT: Run this command, not just "npm install"
+# Step 2: Install ALL dependencies
 npm run install-all
 
-# Step 3: Get the .env file from team lead and place it in backend/ folder
-# The .env file contains database credentials and is shared privately (not via git)
+# Step 3: Create .env file in backend folder
+cd backend
+copy .env.example .env
+# Then open .env and paste the credentials from team lead
 
-# Step 4: Start the application
+# Step 4: Start the application (from project root)
+cd ..
 npm run dev
 ```
 
