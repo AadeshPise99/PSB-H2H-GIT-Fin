@@ -1,0 +1,26 @@
+
+> psb-h2h-app@1.0.0 dev
+> concurrently "npm run start:backend" "npm run start:frontend"
+
+[1] 
+[1] > psb-h2h-app@1.0.0 start:frontend
+[1] > cd frontend && npm run dev
+[1] 
+[0] 
+[0] > psb-h2h-app@1.0.0 start:backend
+[0] > cd backend && node src/server.js
+[0] 
+[0] [dotenv@17.2.3] injecting env (3) from .env -- tip: ⚙️  override existing env vars with { override: true }
+[1] 
+[1] > psb-h2h-simpleflow@0.0.0 dev
+[1] > vite
+[1] 
+[0] Server is running on port 5000
+[1] 
+[1]   VITE v6.4.1  ready in 833 ms
+[1] 
+[1]   ➜  Local:   http://localhost:3000/
+[1]   ➜  Network: http://192.168.0.2:3000/
+[1] 10:11:07 AM [vite] (client) hmr update /App.tsx
+[1] 10:26:48 AM [vite] (client) hmr update /App.tsx
+[0] Error in uploadSftpFile: getConnection: getaddrinfo ENOTFOUND sftp.example.com
