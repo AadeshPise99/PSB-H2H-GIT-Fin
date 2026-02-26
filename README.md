@@ -109,7 +109,7 @@ MongoDB (transaction_summary)          MongoDB (transaction)              MySQL 
 - MongoDB instance access
 - SFTP server credentials
 
-### Quick Start (5 Steps)
+### Quick Start (4 Steps)
 
 ```bash
 # Step 1: Clone the repository
@@ -117,26 +117,19 @@ git clone <repository-url>
 cd PSB-H2H-GIT-Fin
 
 # Step 2: Install ALL dependencies (root + frontend + backend)
-# ⚠️ IMPORTANT: Run this FIRST, not just "npm install"
+# ⚠️ IMPORTANT: Run this command, not just "npm install"
 npm run install-all
 
-# Step 3: Create environment file from template
-cd backend
-copy .env.example .env      # Windows
-# OR: cp .env.example .env  # Mac/Linux
+# Step 3: Get the .env file from team lead and place it in backend/ folder
+# The .env file contains database credentials and is shared privately (not via git)
 
-# Step 4: Edit backend/.env with actual credentials
-# Get the credentials from your team lead
-
-# Step 5: Go back to root and start the app
-cd ..
+# Step 4: Start the application
 npm run dev
 ```
 
 ### Environment Variables (backend/.env)
 
-> **⚠️ IMPORTANT**: The `.env` file is NOT included in git for security reasons.
-> Copy `backend/.env.example` to `backend/.env` and fill in the actual values.
+> **⚠️ Note**: The `.env` file is NOT in git for security. Get it from your team lead or copy from `backend/.env.example`.
 
 | Variable | Description | Example |
 |----------|-------------|---------|
