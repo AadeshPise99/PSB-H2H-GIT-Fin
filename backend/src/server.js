@@ -1,7 +1,16 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const express = require('express');
 const cors = require('cors');
 const psbRoutes = require('./routes/psb.routes');
+
+// Debug: Log if .env is loaded correctly
+console.log('Environment loaded:', {
+    API_BASE_URL: process.env.API_BASE_URL ? '✓ Set' : '✗ Missing',
+    MYSQL_HOST: process.env.MYSQL_HOST ? '✓ Set' : '✗ Missing',
+    MONGO_URI: process.env.MONGO_URI ? '✓ Set' : '✗ Missing',
+    SFTP_HOST: process.env.SFTP_HOST ? '✓ Set' : '✗ Missing'
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
