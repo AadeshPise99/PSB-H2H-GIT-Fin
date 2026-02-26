@@ -105,56 +105,69 @@ MongoDB (transaction_summary)          MongoDB (transaction)              MySQL 
 ### Prerequisites
 
 - Node.js (v18+ recommended)
-- MySQL database
-- MongoDB instance
-- SFTP server access
-- Google Gemini API key (optional, for AI features)
+- MySQL database access
+- MongoDB instance access
+- SFTP server credentials
 
-### Installation
+### Quick Start (5 Steps)
 
 ```bash
-# Clone the repository
+# Step 1: Clone the repository
 git clone <repository-url>
 cd PSB-H2H-GIT-Fin
 
-# Install all dependencies (root, frontend, and backend)
+# Step 2: Install ALL dependencies (root + frontend + backend)
+# ⚠️ IMPORTANT: Run this FIRST, not just "npm install"
 npm run install-all
+
+# Step 3: Create environment file from template
+cd backend
+copy .env.example .env      # Windows
+# OR: cp .env.example .env  # Mac/Linux
+
+# Step 4: Edit backend/.env with actual credentials
+# Get the credentials from your team lead
+
+# Step 5: Go back to root and start the app
+cd ..
+npm run dev
 ```
 
-### Environment Variables
+### Environment Variables (backend/.env)
 
-Create a `.env` file in the `backend/` directory:
+> **⚠️ IMPORTANT**: The `.env` file is NOT included in git for security reasons.
+> Copy `backend/.env.example` to `backend/.env` and fill in the actual values.
 
-```env
-# Server
-PORT=5000
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `PORT` | Backend server port | `5000` |
+| `API_BASE_URL` | PSB API base URL | `https://application.uat.psbxchange.com` |
+| `API_KEY` | PSB API key | Get from team lead |
+| `MYSQL_HOST` | MySQL server host | Get from team lead |
+| `MYSQL_PORT` | MySQL port | `3306` |
+| `MYSQL_USER` | MySQL username | Get from team lead |
+| `MYSQL_PASSWORD` | MySQL password | Get from team lead |
+| `MYSQL_DATABASE` | MySQL database name | `api-gateway` |
+| `MONGO_URI` | MongoDB connection string | Get from team lead |
+| `MONGO_DATABASE` | MongoDB database name | Get from team lead |
+| `SFTP_HOST` | SFTP server host | Get from team lead |
+| `SFTP_PORT` | SFTP port | `2222` |
+| `SFTP_USER` | SFTP username | Get from team lead |
+| `SFTP_PASSWORD` | SFTP password | Get from team lead |
 
-# External API
-API_BASE_URL=<your-api-base-url>
-API_KEY=<your-api-key>
+### Troubleshooting
 
-# MySQL
-MYSQL_HOST=<host>
-MYSQL_PORT=3306
-MYSQL_USER=<username>
-MYSQL_PASSWORD=<password>
-MYSQL_DATABASE=<database-name>
-
-# MongoDB
-MONGO_URI=<mongodb-connection-string>
-MONGO_DATABASE=<database-name>
-
-# SFTP
-SFTP_HOST=<sftp-host>
-SFTP_PORT=2222
-SFTP_USER=<username>
-SFTP_PASSWORD=<password>
-```
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `concurrently: command not found` | Root dependencies not installed | Run `npm run install-all` from project root |
+| `Cannot find module 'express'` | Backend dependencies not installed | Run `npm run install-all` from project root |
+| `Invalid URL` (500 error) | Missing `.env` file | Copy `backend/.env.example` to `backend/.env` and add credentials |
+| `ECONNREFUSED` (MongoDB/MySQL) | Wrong database credentials | Check `.env` values with team lead |
 
 ### Running the Application
 
 ```bash
-# Run both frontend and backend concurrently
+# Run both frontend and backend concurrently (from project root)
 npm run dev
 
 # Or run separately:
