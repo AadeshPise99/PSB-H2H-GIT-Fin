@@ -21,8 +21,7 @@ An internal operations application for managing Host-to-Host (H2H) file transfer
 │   └─ MongoDB (Invoice/Transaction Storage)                          │
 ├─────────────────────────────────────────────────────────────────────┤
 │   External Services                                                 │
-│   ├─ SFTP Server (Secure File Transfer)                             │
-│   └─ Google Gemini API (AI-Powered XML Generation)                  │
+│   └─ SFTP Server (Secure File Transfer)                             │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -64,7 +63,7 @@ MongoDB (transaction_summary)          MongoDB (transaction)              MySQL 
 ## ✨ Features
 
 - **Dual Mode Operation**: Toggle between real backend API calls and simulated responses (bypass CORS)
-- **AI-Powered XML Generation**: Uses Google Gemini to auto-generate banking XML responses
+- **XML Response Generator**: Form-based XML generation for banking transaction/repayment responses
 - **Visual FTP Client**: Drag-and-drop interface for local ↔ remote file transfers
 - **Batch Lookup**: Fetch FRQ (Funding Request) data by Batch ID from MySQL
 - **Invoice Search**: Query invoices by PSB Channel Partner Identifier with MongoDB aggregation
@@ -85,7 +84,6 @@ MongoDB (transaction_summary)          MongoDB (transaction)              MySQL 
 - Vite
 - Tailwind CSS
 - Lucide React (Icons)
-- @google/genai (Gemini AI)
 
 ### Backend
 - Node.js
